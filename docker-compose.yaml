@@ -1,0 +1,29 @@
+version: "3.9"
+
+services: 
+  test-pg-db:
+    environment:
+      POSTGRES_DB: ${PG_DB}
+      POSTGRES_USER: ${PG_UID}
+      POSTGRES_PASSWORD: ${PG_PWD}
+    build:
+      context: .
+      dockerfile: pg.Dockerfile
+    ports:
+      - "4443:5432"
+      
+#  test-mssql-db:
+    
+  data-manager-test-suite:
+    environment:
+      - PG_HOST=test-pg-db
+      - PG_DB
+      - PG_UID
+      - PG_PWD
+    build:
+      context: .
+      dockerfile: DataManagerTests/Dockerfile
+    depends_on:
+      test-pg-db:
+        condition: service_healthy
+      
